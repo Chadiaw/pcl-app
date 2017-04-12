@@ -10,7 +10,10 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/common/common.h>
 #include <pcl/io/pcd_io.h>
+
+#include <kinectgrabber.h>
 
 // Visualization Toolkit (VTK)
 #include <vtkRenderWindow.h>
@@ -36,14 +39,26 @@ public slots:
   randomButtonPressed ();
 
   void
+  cloudCaptured ();
+
+  void
   loadButtonPressed ();
 
   void
   pSliderValueChanged (int value);
 
+  void
+  startButtonPressed ();
+
+  void
+  stopButtonPressed ();
+
 protected:
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
   PointCloudT::Ptr cloud;
+
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> kinectViewer;
+  pcl::visualization::Camera cameraParams;
 
   unsigned int red;
   unsigned int green;
@@ -51,6 +66,7 @@ protected:
 
 private:
   Ui::PCLApp *ui;
+  KinectGrabber *grabber;
 
 };
 

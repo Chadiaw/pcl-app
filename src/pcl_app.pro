@@ -13,8 +13,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        pclapp.cpp
+        pclapp.cpp \
+    kinectgrabber.cpp
 
-HEADERS  += pclapp.h
+HEADERS  += pclapp.h\
+        kinectgrabber.h
 
 FORMS    += pclapp.ui
