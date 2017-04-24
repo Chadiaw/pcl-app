@@ -46,7 +46,7 @@ PCLApp::PCLApp (QWidget *parent) :
   // Connect KinectGrabber, start and stop buttons
   connect (grabber, SIGNAL (cloudChanged()), this, SLOT(cloudCaptured()));
   ui->pushButton_stop->setEnabled(false);
-  connect (ui->pushButton_start, SIGNAL (clicked ()), this, SLOT (startButtonPressed()));=
+  connect (ui->pushButton_start, SIGNAL (clicked ()), this, SLOT (startButtonPressed()));
   connect (ui->pushButton_stop, SIGNAL (clicked ()), this, SLOT (stopButtonPressed()));
 
   // Connect "random" button and the function
