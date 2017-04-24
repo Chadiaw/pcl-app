@@ -1,6 +1,7 @@
 #include "pclapp.h"
 #include "../build/ui_pclapp.h"
 #include <QtWidgets/QFileDialog>
+#include <QMessageBox>
 
 PCLApp::PCLApp (QWidget *parent) :
   QMainWindow (parent),
@@ -38,8 +39,9 @@ PCLApp::PCLApp (QWidget *parent) :
   ui->qvtkWidget->update ();
 
   // Connect "random" button and the function
-  connect (ui->pushButton_random,  SIGNAL (clicked ()), this, SLOT (randomButtonPressed ()));
+  //connect (ui->pushButton_random,  SIGNAL (clicked ()), this, SLOT (randomButtonPressed ()));
   connect (ui->pushButton_load,  SIGNAL (clicked ()), this, SLOT (loadButtonPressed ()));
+  connect (ui->pushButton_save,  SIGNAL (clicked ()), this, SLOT (saveButtonPressed ()));
   
   // Connect point size slider
   connect (ui->horizontalSlider_p, SIGNAL (valueChanged (int)), this, SLOT (pSliderValueChanged (int)));
@@ -65,6 +67,30 @@ PCLApp::randomButtonPressed ()
 
   viewer->updatePointCloud (cloud, "cloud");
   ui->qvtkWidget->update ();
+}
+
+void
+PCLApp::saveButtonPressed ()
+{
+
+    QString fileName = QFileDialog::getSaveFileName(this,
+           tr("Save Frame to PCD File"), "",
+           tr("objectData (*.pcd);;All Files (*)"));
+    if (fileName.isEmpty())
+        return;
+    else {
+        QFile file(fileName);
+        if (!file.open(QIODevice::WriteOnly)) {
+            QMessageBox::information(this, tr("Unable to open file"),
+                file.errorString());
+            return;
+        }
+
+                pcl::io::savePCDFile (fileName.toStdString(), *cloud);
+                //std::cerr << "Saved " << cloud.points.size () << " data points to test_pcd.pcd." << std::endl;
+
+        }
+
 }
 
 void

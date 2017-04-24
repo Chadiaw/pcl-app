@@ -34,7 +34,8 @@ public:
 public slots:
   void
   randomButtonPressed ();
-
+  void
+  saveButtonPressed ();
   void
   loadButtonPressed ();
 
