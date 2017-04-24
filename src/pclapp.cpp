@@ -1,6 +1,7 @@
 #include "pclapp.h"
 #include "../build/ui_pclapp.h"
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
 
 PCLApp::PCLApp (QWidget *parent) :
   QMainWindow (parent),
@@ -46,12 +47,12 @@ PCLApp::PCLApp (QWidget *parent) :
   // Connect KinectGrabber, start and stop buttons
   connect (grabber, SIGNAL (cloudChanged()), this, SLOT(cloudCaptured()));
   ui->pushButton_stop->setEnabled(false);
-  connect (ui->pushButton_start, SIGNAL (clicked ()), this, SLOT (startButtonPressed()));=
+  connect (ui->pushButton_start, SIGNAL (clicked ()), this, SLOT (startButtonPressed()));
   connect (ui->pushButton_stop, SIGNAL (clicked ()), this, SLOT (stopButtonPressed()));
 
   // Connect "random" button and the function
-  connect (ui->pushButton_random,  SIGNAL (clicked ()), this, SLOT (randomButtonPressed ()));
   connect (ui->pushButton_load,  SIGNAL (clicked ()), this, SLOT (loadButtonPressed ()));
+  connect (ui->pushButton_save,  SIGNAL (clicked ()), this, SLOT (saveButtonPressed ()));
 
   // Connect point size slider
   connect (ui->horizontalSlider_p, SIGNAL (valueChanged (int)), this, SLOT (pSliderValueChanged (int)));
@@ -90,21 +91,26 @@ PCLApp::stopButtonPressed() {
     ui->qvtkWidget_kinect->setDisabled(false);
 }
 
+
 void
-PCLApp::randomButtonPressed ()
+PCLApp::saveButtonPressed ()
 {
-  printf ("Random button was pressed\n");
+    QString fileName = QFileDialog::getSaveFileName(this,
+           tr("Save Frame to PCD File"), "",
+           tr("objectData (*.pcd);;All Files (*)"));
+    if (fileName.isEmpty())
+        return;
+    else {
+        QFile file(fileName);
+        if (!file.open(QIODevice::WriteOnly)) {
+            QMessageBox::information(this, tr("Unable to open file"),
+                file.errorString());
+            return;
+        }
+                pcl::io::savePCDFile (fileName.toStdString(), *grabber->getPointCloud());
+                //std::cerr << "Saved " << cloud.points.size () << " data points to test_pcd.pcd." << std::endl;
 
-  // Set the new color
-  for (size_t i = 0; i < cloud->size(); i++)
-  {
-    cloud->points[i].r = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
-    cloud->points[i].g = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
-    cloud->points[i].b = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
-  }
-
-  viewer->updatePointCloud (cloud, "cloud");
-  ui->qvtkWidget_view->update ();
+        }
 }
 
 void

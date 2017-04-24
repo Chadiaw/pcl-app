@@ -38,9 +38,15 @@
     <property name="currentIndex">
      <number>1</number>
     </property>
+    <property name="iconSize">
+     <size>
+      <width>30</width>
+      <height>30</height>
+     </size>
+    </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
-      <string>Tab 1</string>
+      <string>View existing</string>
      </attribute>
      <widget class="QVTKWidget" name="qvtkWidget_view" native="true">
       <property name="geometry">
@@ -55,27 +61,39 @@
      <widget class="QPushButton" name="pushButton_load">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>520</y>
-        <width>200</width>
-        <height>30</height>
+        <x>10</x>
+        <y>500</y>
+        <width>71</width>
+        <height>41</height>
        </rect>
       </property>
-      <property name="text">
-       <string>Load file</string>
+      <property name="mouseTracking">
+       <bool>true</bool>
       </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_random">
-      <property name="geometry">
-       <rect>
-        <x>250</x>
-        <y>520</y>
-        <width>200</width>
+      <property name="toolTip">
+       <string>Load PCD file</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../icons/load.png</normaloff>../icons/load.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>30</width>
         <height>30</height>
-       </rect>
+       </size>
       </property>
-      <property name="text">
-       <string>Random colors</string>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="default">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QSlider" name="horizontalSlider_p">
@@ -121,8 +139,11 @@
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <attribute name="title">
-      <string>Capture</string>
+      <string>View object</string>
      </attribute>
      <widget class="QVTKWidget" name="qvtkWidget_kinect" native="true">
       <property name="geometry">
@@ -158,6 +179,35 @@
       </property>
       <property name="text">
        <string>Stop</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_save">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
+        <y>520</y>
+        <width>51</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Save frame to PCD file </string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../icons/save.png</normaloff>../icons/save.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>30</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>

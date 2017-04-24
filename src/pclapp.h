@@ -35,11 +35,12 @@ public:
   ~PCLApp ();
 
 public slots:
-  void
-  randomButtonPressed ();
 
   void
   cloudCaptured ();
+
+  void
+  saveButtonPressed ();
 
   void
   loadButtonPressed ();
