@@ -2,6 +2,8 @@
 #include "../build/ui_pclapp.h"
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
+#include <pcl/filters/filter.h>
+#include "utils.h"
 
 PCLApp::PCLApp (QWidget *parent) :
   QMainWindow (parent),
@@ -50,9 +52,12 @@ PCLApp::PCLApp (QWidget *parent) :
   connect (ui->pushButton_start, SIGNAL (clicked ()), this, SLOT (startButtonPressed()));
   connect (ui->pushButton_stop, SIGNAL (clicked ()), this, SLOT (stopButtonPressed()));
 
-  // Connect "random" button and the function
+  // Connect buttons and functions
   connect (ui->pushButton_load,  SIGNAL (clicked ()), this, SLOT (loadButtonPressed ()));
-  connect (ui->pushButton_save,  SIGNAL (clicked ()), this, SLOT (saveButtonPressed ()));
+  connect (ui->pushButton_saveKinect,  SIGNAL (clicked ()), this, SLOT (saveKinectCloudPressed ()));
+  connect (ui->pushButton_saveViewer,  SIGNAL (clicked ()), this, SLOT (saveViewerCloudPressed ()));
+  connect (ui->pushButton_nan,  SIGNAL (clicked ()), this, SLOT (nanButtonPressed ()));
+  connect (ui->pushButton_extract,  SIGNAL (clicked ()), this, SLOT (extractButtonPressed ()));
 
   // Connect point size slider
   connect (ui->horizontalSlider_p, SIGNAL (valueChanged (int)), this, SLOT (pSliderValueChanged (int)));
@@ -91,13 +96,12 @@ PCLApp::stopButtonPressed() {
     ui->qvtkWidget_kinect->setDisabled(false);
 }
 
-
 void
-PCLApp::saveButtonPressed ()
+PCLApp::saveKinectCloudPressed ()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-           tr("Save Frame to PCD File"), "",
-           tr("objectData (*.pcd);;All Files (*)"));
+           tr("Save Frame to PCD File"), "../pcd files",
+           tr("Point Cloud Data (*.pcd);;All Files (*)"));
     if (fileName.isEmpty())
         return;
     else {
@@ -110,23 +114,67 @@ PCLApp::saveButtonPressed ()
                 pcl::io::savePCDFile (fileName.toStdString(), *grabber->getPointCloud());
                 //std::cerr << "Saved " << cloud.points.size () << " data points to test_pcd.pcd." << std::endl;
 
+    }
+}
+
+void
+PCLApp::saveViewerCloudPressed ()
+{
+    QString fileName = QFileDialog::getSaveFileName(this,
+           tr("Save Frame to PCD File"), "../pcd files",
+           tr("Point Cloud Data (*.pcd);;All Files (*)"));
+    if (fileName.isEmpty())
+        return;
+    else {
+        QFile file(fileName);
+        if (!file.open(QIODevice::WriteOnly)) {
+            QMessageBox::information(this, tr("Unable to open file"),
+                file.errorString());
+            return;
         }
+                pcl::io::savePCDFile (fileName.toStdString(), *cloud);
+                //std::cerr << "Saved " << cloud.points.size () << " data points to test_pcd.pcd." << std::endl;
+
+    }
+}
+void
+PCLApp::nanButtonPressed()
+{
+    ui->pushButton_saveViewer->setEnabled(false);
+    //PointCloudT::Ptr filteredCloud = Utils::removeNaNPoints(cloud);
+	std::vector<int> indices;
+	pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
+	viewer->removeAllPointClouds();
+	viewer->addPointCloud(cloud, "cloud");
+	ui->qvtkWidget_view->update();
+    ui->pushButton_saveViewer->setEnabled(true);
+}
+
+void
+PCLApp::extractButtonPressed()
+{
+    cloud = Utils::getCloudCluster(cloud);
+    viewer->removeAllPointClouds();
+    viewer->addPointCloud(cloud, "cloud");
+    ui->qvtkWidget_view->update();
 }
 
 void
 PCLApp::loadButtonPressed ()
 {
-  QString fileName = QFileDialog::getOpenFileName(this, "Load a file...", "",
+  QString fileName = QFileDialog::getOpenFileName(this, "Load a file...", "../pcd files",
                                tr("Point Cloud Data (*.pcd)"));
 
   if (pcl::io::loadPCDFile(fileName.toStdString(), *cloud) == -1) //* load the file
   {
+      printf("Error while loading the file");
       PCL_ERROR ("Couldn't read specified file \n");
 
   }
   printf ("File was succesfully loaded\n");
 
-  viewer->updatePointCloud (cloud, "cloud");
+  viewer->removeAllPointClouds();
+  viewer->addPointCloud (cloud, "cloud");
   viewer->resetCamera();
   ui->qvtkWidget_view->update ();
 }

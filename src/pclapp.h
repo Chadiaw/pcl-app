@@ -40,10 +40,19 @@ public slots:
   cloudCaptured ();
 
   void
-  saveButtonPressed ();
+  saveKinectCloudPressed ();
+
+  void
+  saveViewerCloudPressed ();
 
   void
   loadButtonPressed ();
+
+  void
+  nanButtonPressed();
+
+  void
+  extractButtonPressed();
 
   void
   pSliderValueChanged (int value);

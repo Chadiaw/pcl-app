@@ -24,11 +24,11 @@ set( CMAKE_INCLUDE_CURRENT_DIR ON )
 set( CMAKE_AUTOMOC ON )
 
 # Generate MOC Code and UI Header
-qt5_wrap_cpp( MOC pclapp.h kinectgrabber.h)
+qt5_wrap_cpp( MOC pclapp.h kinectgrabber.h )
 qt5_wrap_ui( UI_HEADER pclapp.ui )
 
 # Add Executable
-add_executable( pcl_app main.cpp pclapp.h pclapp.cpp kinectgrabber.h kinectgrabber.cpp pclapp.ui )
+add_executable( pcl_app main.cpp pclapp.h pclapp.cpp kinectgrabber.h kinectgrabber.cpp utils.h utils.cpp pclapp.ui )
 
 # Additional Include Directories
 include_directories( ${PCL_INCLUDE_DIRS} )
