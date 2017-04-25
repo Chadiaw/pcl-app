@@ -27,7 +27,7 @@ void KinectGrabber::cloud_cb_(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr
         emit cloudChanged();
 
     }
-    //viewer.showCloud(outCld);
+
 }
 
 pcl::PointCloud<pcl::PointXYZRGBA>::Ptr KinectGrabber::getPointCloud()
