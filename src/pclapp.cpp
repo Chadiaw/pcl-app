@@ -86,7 +86,7 @@ PCLApp::startButtonPressed() {
     ui->pushButton_start->setEnabled(false);
     ui->pushButton_stop->setEnabled(true);
     ui->qvtkWidget_kinect->setDisabled(true);
-    ui->pushButton_save->setEnabled(false);
+    ui->pushButton_saveKinect->setEnabled(false);
 }
 
 void
@@ -95,7 +95,7 @@ PCLApp::stopButtonPressed() {
     ui->pushButton_start->setEnabled(true);
     ui->pushButton_stop->setEnabled(false);
     ui->qvtkWidget_kinect->setDisabled(false);
-    ui->pushButton_save->setEnabled(true);
+    ui->pushButton_saveKinect->setEnabled(true);
 }
 
 void
