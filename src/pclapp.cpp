@@ -2,6 +2,7 @@
 #include "../build/ui_pclapp.h"
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QStatusBar>
 #include <pcl/filters/filter.h>
 #include "utils.h"
 
@@ -57,7 +58,9 @@ PCLApp::PCLApp (QWidget *parent) :
   connect (ui->pushButton_saveKinect,  SIGNAL (clicked ()), this, SLOT (saveKinectCloudPressed ()));
   connect (ui->pushButton_saveViewer,  SIGNAL (clicked ()), this, SLOT (saveViewerCloudPressed ()));
   connect (ui->pushButton_nan,  SIGNAL (clicked ()), this, SLOT (nanButtonPressed ()));
-  connect (ui->pushButton_extract,  SIGNAL (clicked ()), this, SLOT (extractButtonPressed ()));
+  connect (ui->pushButton_biggest,  SIGNAL (clicked ()), this, SLOT (biggestButtonPressed ()));
+  connect (ui->pushButton_closest,  SIGNAL (clicked ()), this, SLOT (closestButtonPressed ()));
+  connect (ui->pushButton_filter,  SIGNAL (clicked ()), this, SLOT (filterButtonPressed ()));
 
   // Connect point size slider
   connect (ui->horizontalSlider_p, SIGNAL (valueChanged (int)), this, SLOT (pSliderValueChanged (int)));
@@ -70,13 +73,18 @@ PCLApp::PCLApp (QWidget *parent) :
   ui->qvtkWidget_kinect->update ();
   
   kinectViewer->getCameraParameters(cameraParams);
+
+  //this->statusBar()->
 }
 
 void
 PCLApp::cloudCaptured() {
-    kinectViewer->removeAllPointClouds();
-    kinectViewer->addPointCloud(grabber->getPointCloud(), "kinectCloud");
-    ui->qvtkWidget_kinect->update();
+	PointCloudT::Ptr tempCloud = grabber->getPointCloud();
+	if (!tempCloud->empty()) {
+		kinectViewer->removeAllPointClouds();
+		kinectViewer->addPointCloud(tempCloud, "kinectCloud");
+		ui->qvtkWidget_kinect->update();
+	}
 }
 
 void
@@ -87,6 +95,7 @@ PCLApp::startButtonPressed() {
     ui->pushButton_stop->setEnabled(true);
     ui->qvtkWidget_kinect->setDisabled(true);
     ui->pushButton_saveKinect->setEnabled(false);
+    this->statusBar()->showMessage(tr("Kinect Grabber started."));
 }
 
 void
@@ -96,6 +105,7 @@ PCLApp::stopButtonPressed() {
     ui->pushButton_stop->setEnabled(false);
     ui->qvtkWidget_kinect->setDisabled(false);
     ui->pushButton_saveKinect->setEnabled(true);
+    this->statusBar()->showMessage(tr("Kinect Grabber stopped."));
 }
 
 void
@@ -111,10 +121,11 @@ PCLApp::saveKinectCloudPressed ()
         if (!file.open(QIODevice::WriteOnly)) {
             QMessageBox::information(this, tr("Unable to open file"),
                 file.errorString());
+            this->statusBar()->showMessage(tr("Unable to save file."));
             return;
         }
                 pcl::io::savePCDFile (fileName.toStdString(), *grabber->getPointCloud());
-                //std::cerr << "Saved " << cloud.points.size () << " data points to test_pcd.pcd." << std::endl;
+                this->statusBar()->showMessage(tr("Kinect data saved to file ") + fileName + ".");
 
     }
 }
@@ -135,7 +146,7 @@ PCLApp::saveViewerCloudPressed ()
             return;
         }
                 pcl::io::savePCDFile (fileName.toStdString(), *cloud);
-                //std::cerr << "Saved " << cloud.points.size () << " data points to test_pcd.pcd." << std::endl;
+                this->statusBar()->showMessage(tr("Current point cloud saved to file ") + fileName + ".");
 
     }
 }
@@ -150,15 +161,37 @@ PCLApp::nanButtonPressed()
 	viewer->addPointCloud(cloud, "cloud");
 	ui->qvtkWidget_view->update();
     ui->pushButton_saveViewer->setEnabled(true);
+    this->statusBar()->showMessage(tr("Removed all NaN points from the point cloud."));
 }
 
 void
-PCLApp::extractButtonPressed()
+PCLApp::biggestButtonPressed()
 {
-    cloud = Utils::getCloudCluster(cloud);
+    cloud = Utils::getBiggestCluster(cloud);
     viewer->removeAllPointClouds();
     viewer->addPointCloud(cloud, "cloud");
     ui->qvtkWidget_view->update();
+    this->statusBar()->showMessage(tr("Extracted biggest cloud cluster from point cloud."));
+}
+
+void
+PCLApp::closestButtonPressed()
+{
+    cloud = Utils::getClosestCluster(cloud);
+    viewer->removeAllPointClouds();
+    viewer->addPointCloud(cloud, "cloud");
+    ui->qvtkWidget_view->update();
+    this->statusBar()->showMessage(tr("Extracted closest cloud cluster from point cloud."));
+}
+
+void
+PCLApp::filterButtonPressed()
+{
+	cloud = Utils::filterCloud(cloud);
+	viewer->removeAllPointClouds();
+	viewer->addPointCloud(cloud, "cloud");
+	ui->qvtkWidget_view->update();
+	this->statusBar()->showMessage(tr("Filtered current point cloud"));
 }
 
 void
@@ -171,13 +204,15 @@ PCLApp::loadButtonPressed ()
   {
       printf("Error while loading the file");
       PCL_ERROR ("Couldn't read specified file \n");
+      this->statusBar()->showMessage(tr("Unable to open load."));
 
   }
-  printf ("File was succesfully loaded\n");
+ this->statusBar()->showMessage(tr("PCD file was succesfully loaded."));
 
   viewer->removeAllPointClouds();
   viewer->addPointCloud (cloud, "cloud");
-  viewer->resetCamera();
+  //viewer->resetCamera();
+  viewer->setCameraParameters(cameraParams);
   ui->qvtkWidget_view->update ();
 }
 

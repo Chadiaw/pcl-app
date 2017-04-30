@@ -10,7 +10,11 @@ typedef pcl::PointCloud<PointT> PointCloudT;
 namespace Utils
 {
 	PointCloudT::Ptr removeNaNPoints (const PointCloudT::ConstPtr &cloud);
-    PointCloudT::Ptr getCloudCluster(const PointCloudT::ConstPtr &cloud);
+    PointCloudT::Ptr getBiggestCluster(const PointCloudT::ConstPtr &cloud);
+    PointCloudT::Ptr getClosestCluster(const PointCloudT::ConstPtr &cloud);
+    PointCloudT::Ptr filterCloud(const PointCloudT::ConstPtr &cloud);
+
+	pcl::PointXYZ getClosestPoint(const PointCloudT::ConstPtr &cloudRGB);
 
 }
 

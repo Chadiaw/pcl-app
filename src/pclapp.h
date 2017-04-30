@@ -52,7 +52,13 @@ public slots:
   nanButtonPressed();
 
   void
-  extractButtonPressed();
+  biggestButtonPressed();
+
+  void
+  closestButtonPressed();
+
+  void
+  filterButtonPressed();
 
   void
   pSliderValueChanged (int value);
